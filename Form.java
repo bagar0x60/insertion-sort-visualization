@@ -74,10 +74,25 @@ public class Form  extends JFrame{
         animationPicturePane = new JPanel(new FlowLayout());
         animationTextPane = new JPanel(new FlowLayout());
 
-
         cont.add(animationPane, BorderLayout.CENTER);
         animationPane.add(animationPicturePane, BorderLayout.CENTER);
         animationPane.add(animationTextPane, BorderLayout.SOUTH);
+
+        //==============
+        animationPicturePane.setLayout(null);
+
+        Dimension animationPicturePaneSize = animationPicturePane.getSize();  // return 0, 0 because fuck you
+
+        JButton button1 = new JButton("1");
+        button1.setSize(100, 100);
+        button1.setLocation(200, 200);
+        JButton button2 = new JButton("2");
+        button2.setSize(100, 100);
+        button2.setLocation(300, 200);
+
+        animationPicturePane.add(button1);
+        animationPicturePane.add(button2);
+        //==============
 
         animationTextPane.setBorder(BorderFactory.createLineBorder(Color.black));
         animationPicturePane.setBorder(BorderFactory.createLineBorder(Color.black));
