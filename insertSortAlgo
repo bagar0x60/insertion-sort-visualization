@@ -1,0 +1,80 @@
+import java.util.Scanner;
+
+
+public class InsertSort {
+
+    public static void main(String[] args) {
+
+        System.out.println("Введите числа: ");
+        Scanner inpScanner = new Scanner(System.in);
+        String inpStr;
+        int size = 0;
+
+        // Проверка корректности входных данных
+        for(;;) {
+            inpStr = inpScanner.nextLine();
+            Scanner strScanner = new Scanner(inpStr);
+            boolean tooLongInt = false;
+
+            while (strScanner.hasNextInt()) {
+                int z = strScanner.nextInt();
+                if(z > 99 || z < -99){
+                    tooLongInt = true;
+                    break;
+                }
+                size++;
+            }
+            if (strScanner.hasNext() || tooLongInt || size > 10) {
+                if(strScanner.hasNext())
+                    System.out.println("Данные введены в неверном формате");
+                else if(size > 10)
+                    System.out.println("Слишком длинная моследовательность чисел (max = 10)");
+
+                inpScanner.reset();
+                size = 0;
+                continue;
+            }
+            else{
+                break;
+            }
+        }
+
+        // Заполнение массива чисел
+        Scanner strScanner = new Scanner(inpStr);
+        int inpData[] = new int[size];
+
+        int i = 0;
+        while(strScanner.hasNextInt()){
+            inpData[i] = strScanner.nextInt();
+            i++;
+        }
+
+
+        // Сортировка и вывод
+        sort(inpData, size);
+
+        System.out.println("Отсортированная последовательность");
+        for(int j = 0; j < size; j++){
+            System.out.print(inpData[j] + " ");
+        }
+
+    }
+
+
+    // Сортировка вставками
+    public static void sort(int arr[], int s){
+
+        for (int i = 0; i < s; i++)
+        {
+            int temp = arr[i];
+            int j =i-1;
+            while(j >= 0 && arr[j] > temp)
+            {
+                arr[j + 1] = arr[j];
+                j--;
+            }
+            arr[j + 1] = temp;
+        }
+    }
+
+}
