@@ -1,4 +1,3 @@
-
 import java.util.Scanner;
 import javax.swing.*;
 import java.awt.*;
@@ -7,7 +6,6 @@ import java.util.Vector;
 
 
 public class Form  extends JFrame {
-
     private Vector<NumberBlock> blockVector;
     private JPanel bottomPane;
     private JPanel inputPane;
@@ -21,8 +19,8 @@ public class Form  extends JFrame {
     private JLabel inputLabe;
     private JPanel emptyPanel1, emptyPanel2, emptyPanel3, emptyPanel4, emptyPanel5;
     private static final int MAX_BLOCKS_NUMBER = 10;
-    private static final int MAX_ALLOWED_ELEMENT = 99;
-    private static final int MIN_ALLOWED_ELEMENT = -99;
+    private static final int MAX_ALLOWED_ELEMENT = 100;
+    private static final int MIN_ALLOWED_ELEMENT = -100;
 
     public Form() {
         super("Application");
@@ -88,12 +86,8 @@ public class Form  extends JFrame {
         animationPane.add(animationPicturePane, BorderLayout.CENTER);
         animationPane.add(animationTextPane, BorderLayout.SOUTH);
 
-        //==============
         animationPicturePane.setLayout(null);
-        Dimension animationPicturePaneSize = animationPicturePane.getSize();  // return 0, 0 because fuck you
         animationPicturePane.addComponentListener(new ResizeListener());
-
-        //==============
 
         animationTextPane.setBorder(BorderFactory.createLineBorder(Color.black));
         animationPicturePane.setBorder(BorderFactory.createLineBorder(Color.black));
@@ -107,13 +101,12 @@ public class Form  extends JFrame {
     }
 
     private class InputTFListener implements ActionListener{
-
         public void actionPerformed(ActionEvent e){
             String inpStr;
             int size = 0;
 
             while(blockVector.size()!=0) {
-              animationPicturePane.remove(blockVector.remove(blockVector.size()-1));
+                animationPicturePane.remove(blockVector.remove(blockVector.size()-1));
             }
             animationPicturePane.revalidate();
             animationPicturePane.repaint();
@@ -125,22 +118,23 @@ public class Form  extends JFrame {
 
                 while (strScanner.hasNextInt()) {
                     int z = strScanner.nextInt();
-                    if(z > MAX_ALLOWED_ELEMENT || z < MIN_ALLOWED_ELEMENT){
+                    if(z >= MAX_ALLOWED_ELEMENT || z <= MIN_ALLOWED_ELEMENT){
                         tooLongInt = true;
                         break;
                     }
                     size++;
                 }
                 if (strScanner.hasNext() || tooLongInt || size > MAX_BLOCKS_NUMBER) {
-                    if(strScanner.hasNext() || tooLongInt)
+                    if(strScanner.hasNext() || tooLongInt) {
                         resultTextField.setText("Данные введены в неверном формате");
-                    else if(size > MAX_BLOCKS_NUMBER)
+                    }
+                    else if(size > MAX_BLOCKS_NUMBER) {
                         resultTextField.setText("Слишком длинная последовательность чисел (max = 10)");
+                    }
 
                     inputTextField.setText("");
                     inputTextField.addActionListener(this);
                     size = 0;
-                    continue;
                 }
                 else{
                     break;
@@ -151,15 +145,19 @@ public class Form  extends JFrame {
             int Data[] = new int[size];
 
 
-
             int i = 0;
             while(strScanner.hasNextInt()){
                 Data[i] = strScanner.nextInt();
                 int blockSideSize = animationPicturePane.getWidth()/(MAX_BLOCKS_NUMBER+2);
-                blockVector.add(new NumberBlock(Data[i], blockSideSize*((MAX_BLOCKS_NUMBER+2-size)/2)+i*blockSideSize, animationPane.getHeight()/2  - 45, animationPane.getWidth()/(MAX_BLOCKS_NUMBER+2)));
+                blockVector.add(new NumberBlock(Data[i],
+                        blockSideSize*((MAX_BLOCKS_NUMBER+2-size)/2)+i*blockSideSize,
+                        animationPane.getHeight()/2  - 45,
+                        animationPane.getWidth()/(MAX_BLOCKS_NUMBER+2)));
                 animationPicturePane.add(blockVector.get(i));
                 i++;
             }
+
+            animationPicturePane.revalidate();
             animationPicturePane.repaint();
 
             sort(Data, size);
@@ -167,7 +165,6 @@ public class Form  extends JFrame {
             String resultStr = "";
             for(int j = 0; j < size; j++){
                 resultStr += Data[j] + " ";
-
             }
 
             if(!resultStr.equals("")){
@@ -180,20 +177,24 @@ public class Form  extends JFrame {
 
     private class ResizeListener extends ComponentAdapter {
         public void componentResized(ComponentEvent e) {
+            int blockSideSize = animationPicturePane.getWidth()/(MAX_BLOCKS_NUMBER + 2);
             for(int i = 0; i < blockVector.size(); i++){
-                blockVector.get(i).setSideSize(animationPane.getWidth()/12);
+                blockVector.get(i).setPosition( blockSideSize*(MAX_BLOCKS_NUMBER + 2-blockVector.size())/2 + i*blockSideSize,
+                                                animationPane.getHeight()/2  - 45);
+                blockVector.get(i).setSideSize(animationPane.getWidth()/(MAX_BLOCKS_NUMBER + 2));
             }
-            InputTFListener inpRFL = new InputTFListener();
-            inpRFL.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED,null));
+
+            animationPicturePane.revalidate();
+            animationPicturePane.repaint();
         }
     }
 
-    public static void sort(int arr[], int s){
+    private static void sort(int arr[], int s){
 
         for (int i = 0; i < s; i++)
         {
             int temp = arr[i];
-            int j =i-1;
+            int j = i - 1;
             while(j >= 0 && arr[j] > temp)
             {
                 arr[j + 1] = arr[j];

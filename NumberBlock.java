@@ -1,4 +1,3 @@
-
 import java.awt.*;
 import javax.swing.*;
 
@@ -16,12 +15,14 @@ public class NumberBlock extends JPanel{
         xCordinate = xCor;
         yCordinate = yCor;
         sideSize = sideS;
-        JLabel numLabe = new JLabel(Integer.toString(number));
-        numLabe.setSize(10, 10);
-        numLabe.setAlignmentX(CENTER_ALIGNMENT);
-        numLabe.setAlignmentY(CENTER_ALIGNMENT);
-        this.add(numLabe);
+        JLabel numLabel = new JLabel(Integer.toString(number));
+
+        numLabel.setSize(10, 10);
+        numLabel.setAlignmentX(CENTER_ALIGNMENT);  // does this lines really need?
+        numLabel.setAlignmentY(CENTER_ALIGNMENT);  //
+
         this.setLayout(new GridBagLayout());
+        this.add(numLabel);
         this.setBackground(Color.white);
         this.setBorder(BorderFactory.createLineBorder(Color.black));
         this.setLocation(xCordinate, yCordinate);
@@ -67,7 +68,6 @@ public class NumberBlock extends JPanel{
     }
 
     public void setSideSize(int sSize){
-
         sideSize = sSize;
         this.setSize(sideSize, sideSize);
     }
