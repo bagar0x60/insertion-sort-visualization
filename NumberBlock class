@@ -1,7 +1,4 @@
-package com.company;
 
-import java.util.InputMismatchException;
-import java.util.Vector;
 import java.awt.*;
 import javax.swing.*;
 
@@ -52,11 +49,9 @@ public class NumberBlock extends JPanel{
     }
 
     public void setPosition(int xCor, int yCor){
-
-        if(xCor < 0 || yCor < 0) return;
-
         xCordinate = xCor;
         yCordinate = yCor;
+        this.setLocation(xCor, yCor);
     }
 
     public int getXCordinate(){
@@ -69,6 +64,12 @@ public class NumberBlock extends JPanel{
 
     public int getSideSize(){
         return sideSize;
+    }
+
+    public void setSideSize(int sSize){
+
+        sideSize = sSize;
+        this.setSize(sideSize, sideSize);
     }
 
 }
