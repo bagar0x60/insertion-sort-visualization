@@ -161,7 +161,7 @@ public class Form  extends JFrame implements ActionListener {
             resultStr += inpData[j] + " ";
         }
 
-        resultTextField.setText(resultStr);
+        if(resultStr != "") resultTextField.setText(resultStr);
 
     }
 
@@ -186,4 +186,3 @@ public class Form  extends JFrame implements ActionListener {
     }
 
 }
-
