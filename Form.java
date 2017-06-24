@@ -1,15 +1,14 @@
-package com.company;
 
 import java.util.Scanner;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.StringJoiner;
+import java.util.Vector;
 
-/**
- * Created by Максим on 23.06.2017.
- */
-public class Form  extends JFrame implements ActionListener {
+
+public class Form  extends JFrame {
+
+    private Vector<NumberBlock> blockVector;
     private JPanel bottomPane;
     private JPanel inputPane;
     private JPanel resultPane;
@@ -21,15 +20,18 @@ public class Form  extends JFrame implements ActionListener {
     private JTextField inputTextField;
     private JLabel inputLabe;
     private JPanel emptyPanel1, emptyPanel2, emptyPanel3, emptyPanel4, emptyPanel5;
+    private static final int MAX_BLOCKS_NUMBER = 10;
+    private static final int MAX_ALLOWED_ELEMENT = 99;
+    private static final int MIN_ALLOWED_ELEMENT = -99;
 
-
-    private Form() {
+    public Form() {
         super("Application");
         setSize(800, 600);
         setMinimumSize(new Dimension(800,600));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Container cont = getContentPane();
         cont.setLayout(new BorderLayout(5,5));
+        blockVector = new Vector<NumberBlock>();
 
         emptyPanel1 = new JPanel();
         emptyPanel2 = new JPanel();
@@ -58,7 +60,7 @@ public class Form  extends JFrame implements ActionListener {
 
         inputLabe = new JLabel("      Input numbers:      ");
         inputTextField = new JTextField();
-        inputTextField.addActionListener(this);
+        inputTextField.addActionListener(new InputTFListener());
 
         inputPane.add(inputLabe, BorderLayout.WEST);
         inputPane.add(inputTextField, BorderLayout.CENTER);
@@ -68,6 +70,7 @@ public class Form  extends JFrame implements ActionListener {
         resultLabe = new JLabel("             Result:              ");
         resultTextField = new JTextField();
         resultTextField.setHorizontalAlignment(JTextField.CENTER);
+        resultTextField.setEditable(false);
 
         resultPane.add(resultLabe, BorderLayout.WEST);
         resultPane.add(resultTextField, BorderLayout.CENTER);
@@ -76,8 +79,9 @@ public class Form  extends JFrame implements ActionListener {
         resultPane.add(emptyPanel5, BorderLayout.EAST);
 
 
+
         animationPane = new JPanel(new BorderLayout());
-        animationPicturePane = new JPanel(new FlowLayout());
+        animationPicturePane = new JPanel();
         animationTextPane = new JPanel(new FlowLayout());
 
         cont.add(animationPane, BorderLayout.CENTER);
@@ -87,16 +91,8 @@ public class Form  extends JFrame implements ActionListener {
         //==============
         animationPicturePane.setLayout(null);
         Dimension animationPicturePaneSize = animationPicturePane.getSize();  // return 0, 0 because fuck you
+        animationPicturePane.addComponentListener(new ResizeListener());
 
-        JButton button1 = new JButton("1");
-        button1.setSize(100, 100);
-        button1.setLocation(cont.getWidth()/10+50, 200);
-        JButton button2 = new JButton("2");
-        button2.setSize(100, 100);
-        button2.setLocation(cont.getWidth()/10+150, 200);
-
-        animationPicturePane.add(button1);
-        animationPicturePane.add(button2);
         //==============
 
         animationTextPane.setBorder(BorderFactory.createLineBorder(Color.black));
@@ -110,64 +106,86 @@ public class Form  extends JFrame implements ActionListener {
 
     }
 
-    public void actionPerformed(ActionEvent e){
-        String inpStr;
-        int size = 0;
+    private class InputTFListener implements ActionListener{
 
-        // Проверка корректности входных данных
-        for(;;) {
-            inpStr = inputTextField.getText();
-            Scanner strScanner = new Scanner(inpStr);
-            boolean tooLongInt = false;
+        public void actionPerformed(ActionEvent e){
+            String inpStr;
+            int size = 0;
 
-            while (strScanner.hasNextInt()) {
-                int z = strScanner.nextInt();
-                if(z > 99 || z < -99){
-                    tooLongInt = true;
+            while(blockVector.size()!=0) {
+              animationPicturePane.remove(blockVector.remove(blockVector.size()-1));
+            }
+            animationPicturePane.revalidate();
+            animationPicturePane.repaint();
+
+            for(;;) {
+                inpStr = inputTextField.getText();
+                Scanner strScanner = new Scanner(inpStr);
+                boolean tooLongInt = false;
+
+                while (strScanner.hasNextInt()) {
+                    int z = strScanner.nextInt();
+                    if(z > MAX_ALLOWED_ELEMENT || z < MIN_ALLOWED_ELEMENT){
+                        tooLongInt = true;
+                        break;
+                    }
+                    size++;
+                }
+                if (strScanner.hasNext() || tooLongInt || size > MAX_BLOCKS_NUMBER) {
+                    if(strScanner.hasNext() || tooLongInt)
+                        resultTextField.setText("Данные введены в неверном формате");
+                    else if(size > MAX_BLOCKS_NUMBER)
+                        resultTextField.setText("Слишком длинная последовательность чисел (max = 10)");
+
+                    inputTextField.setText("");
+                    inputTextField.addActionListener(this);
+                    size = 0;
+                    continue;
+                }
+                else{
                     break;
                 }
-                size++;
             }
-            if (strScanner.hasNext() || tooLongInt || size > 10) {
-                if(strScanner.hasNext())
-                    resultTextField.setText("Данные введены в неверном формате");
-                else if(size > 10)
-                    resultTextField.setText("Слишком длинная последовательность чисел (max = 10)");
 
+            Scanner strScanner = new Scanner(inpStr);
+            int Data[] = new int[size];
+
+
+
+            int i = 0;
+            while(strScanner.hasNextInt()){
+                Data[i] = strScanner.nextInt();
+                int blockSideSize = animationPicturePane.getWidth()/(MAX_BLOCKS_NUMBER+2);
+                blockVector.add(new NumberBlock(Data[i], blockSideSize*((MAX_BLOCKS_NUMBER+2-size)/2)+i*blockSideSize, animationPane.getHeight()/2  - 45, animationPane.getWidth()/(MAX_BLOCKS_NUMBER+2)));
+                animationPicturePane.add(blockVector.get(i));
+                i++;
+            }
+            animationPicturePane.repaint();
+
+            sort(Data, size);
+
+            String resultStr = "";
+            for(int j = 0; j < size; j++){
+                resultStr += Data[j] + " ";
+
+            }
+
+            if(!resultStr.equals("")){
                 inputTextField.setText("");
-                inputTextField.addActionListener(this);
-                //inpScanner.reset();
-                size = 0;
-                continue;
+                resultTextField.setText(resultStr);
             }
-            else{
-                break;
-            }
+
         }
-
-        Scanner strScanner = new Scanner(inpStr);
-        int inpData[] = new int[size];
-
-        int i = 0;
-        while(strScanner.hasNextInt()){
-            inpData[i] = strScanner.nextInt();
-            i++;
-        }
-
-        sort(inpData, size);
-
-        String resultStr = "";
-        for(int j = 0; j < size; j++){
-            resultStr += inpData[j] + " ";
-        }
-
-        if(resultStr != "") resultTextField.setText(resultStr);
-
     }
 
-    public static void main(String[] args) {
-        Form f = new Form();
-        f.setVisible(true);
+    private class ResizeListener extends ComponentAdapter {
+        public void componentResized(ComponentEvent e) {
+            for(int i = 0; i < blockVector.size(); i++){
+                blockVector.get(i).setSideSize(animationPane.getWidth()/12);
+            }
+            InputTFListener inpRFL = new InputTFListener();
+            inpRFL.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED,null));
+        }
     }
 
     public static void sort(int arr[], int s){
@@ -183,6 +201,10 @@ public class Form  extends JFrame implements ActionListener {
             }
             arr[j + 1] = temp;
         }
+    }
+
+    public Vector<NumberBlock> getBlockVector(){
+        return blockVector;
     }
 
 }
