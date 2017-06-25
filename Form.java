@@ -18,9 +18,13 @@ public class Form  extends JFrame {
     private JTextField inputTextField;
     private JLabel inputLabe;
     private JPanel emptyPanel1, emptyPanel2, emptyPanel3, emptyPanel4, emptyPanel5;
+    private int oldX = 0;
+    private int oldY = 0;
+
     private static final int MAX_BLOCKS_NUMBER = 10;
     private static final int MAX_ALLOWED_ELEMENT = 100;
     private static final int MIN_ALLOWED_ELEMENT = -100;
+    private static final int BLOCK_SIDE_SIZE = 70;
 
     public Form() {
         super("Application");
@@ -87,7 +91,7 @@ public class Form  extends JFrame {
         animationPane.add(animationTextPane, BorderLayout.SOUTH);
 
         animationPicturePane.setLayout(null);
-        animationPicturePane.addComponentListener(new ResizeListener());
+        animationPicturePane.addComponentListener(new ResizeListener(animationPane.getWidth(), animationPane.getHeight()));
 
         animationTextPane.setBorder(BorderFactory.createLineBorder(Color.black));
         animationPicturePane.setBorder(BorderFactory.createLineBorder(Color.black));
@@ -133,7 +137,6 @@ public class Form  extends JFrame {
                     }
 
                     inputTextField.setText("");
-                    inputTextField.addActionListener(this);
                     size = 0;
                 }
                 else{
@@ -146,13 +149,12 @@ public class Form  extends JFrame {
 
 
             int i = 0;
+            int xShift = (animationPane.getWidth() - MAX_BLOCKS_NUMBER * BLOCK_SIDE_SIZE) / 2 ;
+            int yShift = (animationPane.getHeight() - BLOCK_SIDE_SIZE) / 2;
             while(strScanner.hasNextInt()){
                 Data[i] = strScanner.nextInt();
-                int blockSideSize = animationPicturePane.getWidth()/(MAX_BLOCKS_NUMBER+2);
-                blockVector.add(new NumberBlock(Data[i],
-                        blockSideSize*((MAX_BLOCKS_NUMBER+2-size)/2)+i*blockSideSize,
-                        animationPane.getHeight()/2  - 45,
-                        animationPane.getWidth()/(MAX_BLOCKS_NUMBER+2)));
+
+                blockVector.add(new NumberBlock(Data[i], xShift + i* BLOCK_SIDE_SIZE, yShift, BLOCK_SIDE_SIZE));
                 animationPicturePane.add(blockVector.get(i));
                 i++;
             }
@@ -176,16 +178,24 @@ public class Form  extends JFrame {
     }
 
     private class ResizeListener extends ComponentAdapter {
+        private int oldHeight, oldWidth;
+
+        ResizeListener(int width, int height) {
+            oldWidth = width;
+            oldHeight = height;
+        }
+
         public void componentResized(ComponentEvent e) {
-            int blockSideSize = animationPicturePane.getWidth()/(MAX_BLOCKS_NUMBER + 2);
-            for(int i = 0; i < blockVector.size(); i++){
-                blockVector.get(i).setPosition( blockSideSize*(MAX_BLOCKS_NUMBER + 2-blockVector.size())/2 + i*blockSideSize,
-                                                animationPane.getHeight()/2  - 45);
-                blockVector.get(i).setSideSize(animationPane.getWidth()/(MAX_BLOCKS_NUMBER + 2));
+            for (NumberBlock block: blockVector){
+                block.setPosition(  block.getXCordinate() + (-oldWidth  + animationPane.getWidth())  / 2,
+                                    block.getYCordinate() + (-oldHeight + animationPane.getHeight()) / 2);
             }
 
             animationPicturePane.revalidate();
             animationPicturePane.repaint();
+
+            oldWidth = animationPane.getWidth();
+            oldHeight = animationPane.getHeight();
         }
     }
 
