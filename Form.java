@@ -91,7 +91,7 @@ public class Form  extends JFrame {
         animationPane.add(animationTextPane, BorderLayout.SOUTH);
 
         animationPicturePane.setLayout(null);
-        animationPicturePane.addComponentListener(new ResizeListener(animationPane.getWidth(), animationPane.getHeight()));
+        animationPicturePane.addComponentListener(new ResizeListener());
 
         animationTextPane.setBorder(BorderFactory.createLineBorder(Color.black));
         animationPicturePane.setBorder(BorderFactory.createLineBorder(Color.black));
@@ -180,9 +180,9 @@ public class Form  extends JFrame {
     private class ResizeListener extends ComponentAdapter {
         private int oldHeight, oldWidth;
 
-        ResizeListener(int width, int height) {
-            oldWidth = width;
-            oldHeight = height;
+        ResizeListener() {
+            oldWidth = animationPane.getWidth();
+            oldHeight = animationPane.getHeight();
         }
 
         public void componentResized(ComponentEvent e) {
