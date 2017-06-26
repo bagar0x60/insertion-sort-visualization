@@ -7,7 +7,21 @@ import javax.swing.Timer;
 
 
 public class Form  extends JFrame {
+    private static final int MAX_BLOCKS_NUMBER = 10;
+    private static final int MAX_ALLOWED_ELEMENT = 100;
+    private static final int MIN_ALLOWED_ELEMENT = -100;
+    private static final int BLOCK_SIDE_SIZE = 70;
+
+    private static final int BUTTON_WIDTH = 70;
+    private static final int BUTTON_HEIGHT = 50;
+    private static final int SPACE_BETWEEN_BUTTONS = 20;
+
+    private static final int FPS = 2;
+
+
     private Vector<NumberBlock> blockVector;
+    private Timer timer;
+
     private JPanel bottomPane;
     private JPanel inputPane;
     private JPanel resultPane;
@@ -23,21 +37,10 @@ public class Form  extends JFrame {
     private JButton stopAnimationButt;
     private JButton continueAnimationButt;
     private JButton clearAnimationButt;
-    private AnimationListener animationListener;
-    //private InsertionSortAnimation iSAnimation;
-
-    private static final int MAX_BLOCKS_NUMBER = 10;
-    private static final int MAX_ALLOWED_ELEMENT = 100;
-    private static final int MIN_ALLOWED_ELEMENT = -100;
-    private static final int BLOCK_SIDE_SIZE = 70;
-
-    private static final int BUTTON_WIDTH = 70;
-    private static final int BUTTON_HEIGHT = 50;
-    private static final int SPACE_BETWEEN_BUTTONS = 20;
-
+    private InsertionSortAnimation animation;
+    
 
     public Form() {
-
         super("Application");
         setSize(800, 600);
         setMinimumSize(new Dimension(800,600));
@@ -122,7 +125,7 @@ public class Form  extends JFrame {
         stopAnimationButt.addActionListener(new stopAnimationButtonListener());
         stopAnimationButt.setSize(BUTTON_WIDTH,BUTTON_HEIGHT);
         stopAnimationButt.setLocation(animationPicturePane.getWidth()/2 - (BUTTON_WIDTH/2)*3 - SPACE_BETWEEN_BUTTONS/2,
-                                     (animationPicturePane.getHeight() - BUTTON_HEIGHT - 10));
+                (animationPicturePane.getHeight() - BUTTON_HEIGHT - 10));
 
         System.out.println(animationPicturePane.getHeight());
         System.out.println(animationTextPane.getHeight());
@@ -134,7 +137,7 @@ public class Form  extends JFrame {
         clearAnimationButt.addActionListener(new clearAnimationButtonListener());
         clearAnimationButt.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
         clearAnimationButt.setLocation(animationPicturePane.getWidth()/2 - BUTTON_WIDTH/2,
-                                      (animationPicturePane.getHeight() - BUTTON_HEIGHT - 10));
+                (animationPicturePane.getHeight() - BUTTON_HEIGHT - 10));
 
 
         continueAnimationButt = new JButton("Play");
@@ -143,7 +146,7 @@ public class Form  extends JFrame {
         continueAnimationButt.addActionListener(new continueAnimationButtonListener());
         continueAnimationButt.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
         continueAnimationButt.setLocation(animationPicturePane.getWidth()/2 + BUTTON_WIDTH/2 + SPACE_BETWEEN_BUTTONS/2 ,
-                                         (animationPicturePane.getHeight() - BUTTON_HEIGHT - 10));
+                (animationPicturePane.getHeight() - BUTTON_HEIGHT - 10));
 
 
 
@@ -155,11 +158,14 @@ public class Form  extends JFrame {
         animationPicturePane.add(continueAnimationButt);
         animationPicturePane.add(clearAnimationButt);
 
-
+        animation = new InsertionSortAnimation(blockVector);
+        timer = new Timer(1000 / FPS, new AnimationListener());
     }
 
     private class InputTFListener implements ActionListener{
         public void actionPerformed(ActionEvent e){
+            timer.stop();
+
             String inpStr;
             int size = 0;
 
@@ -205,7 +211,7 @@ public class Form  extends JFrame {
             int i = 0;
 
             int xShift = (animationPicturePane.getWidth() - MAX_BLOCKS_NUMBER * BLOCK_SIDE_SIZE) / 2
-                                                          + BLOCK_SIDE_SIZE*(MAX_BLOCKS_NUMBER-size)/2;
+                    + BLOCK_SIDE_SIZE*(MAX_BLOCKS_NUMBER-size)/2;
             int yShift = (animationPicturePane.getHeight() - BLOCK_SIDE_SIZE - BUTTON_HEIGHT) / 2;
 
             while(strScanner.hasNextInt()){
@@ -232,10 +238,7 @@ public class Form  extends JFrame {
                 resultTextField.setText(resultStr);
             }
 
-
-            animationListener = new AnimationListener();
-            animationListener.timer.start();
-
+            timer.start();
         }
     }
 
@@ -273,14 +276,17 @@ public class Form  extends JFrame {
     }
 
     public class AnimationListener implements ActionListener{
-        Timer timer = new Timer(16,this);
-
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            //InsertionSortAnimation.tick(16);
-        }
+            System.out.println("1");
 
+            /*
+            animation.tick(1000 / FPS);
+            animationPicturePane.revalidate();
+            animationPicturePane.repaint();
+            */
+        }
     }
 
 
@@ -288,7 +294,7 @@ public class Form  extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            animationListener.timer.stop();
+            timer.stop();
         }
     }
 
@@ -296,7 +302,7 @@ public class Form  extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            animationListener.timer.start();
+            timer.start();
         }
     }
 
