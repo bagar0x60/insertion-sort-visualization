@@ -19,21 +19,22 @@ public class Form  extends JFrame {
     private JLabel resultLabe;
     private JLabel inputLabe;
     private JPanel emptyPanel1, emptyPanel2, emptyPanel3, emptyPanel4, emptyPanel5;
+
     private JButton stopAnimationButt;
     private JButton continueAnimationButt;
     private JButton clearAnimationButt;
     private AnimationListener animationListener;
     //private InsertionSortAnimation iSAnimation;
-    private int oldX = 0;
-    private int oldY = 0;
 
     private static final int MAX_BLOCKS_NUMBER = 10;
     private static final int MAX_ALLOWED_ELEMENT = 100;
     private static final int MIN_ALLOWED_ELEMENT = -100;
     private static final int BLOCK_SIDE_SIZE = 70;
+
     private static final int BUTTON_WIDTH = 70;
     private static final int BUTTON_HEIGHT = 50;
     private static final int SPACE_BETWEEN_BUTTONS = 20;
+
 
     public Form() {
 
@@ -102,6 +103,7 @@ public class Form  extends JFrame {
         animationPane.add(animationTextPane, BorderLayout.SOUTH);
         animationPane.setBorder(BorderFactory.createLineBorder(Color.black));
 
+
         pack();
         animationTextPane.setBorder(BorderFactory.createLineBorder(Color.black));
         animationTextPane.add(new JLabel("Comments"));
@@ -110,6 +112,7 @@ public class Form  extends JFrame {
         animationTextPane.setPreferredSize(new Dimension(animationPane.getWidth(), (animationPane.getHeight()/16)*3));
         animationPicturePane.setPreferredSize(new Dimension(animationPane.getWidth(),
                 animationPane.getHeight() - animationTextPane.getHeight()));
+
 
 
         pack();
@@ -200,9 +203,11 @@ public class Form  extends JFrame {
 
 
             int i = 0;
+
             int xShift = (animationPicturePane.getWidth() - MAX_BLOCKS_NUMBER * BLOCK_SIDE_SIZE) / 2
                                                           + BLOCK_SIDE_SIZE*(MAX_BLOCKS_NUMBER-size)/2;
             int yShift = (animationPicturePane.getHeight() - BLOCK_SIDE_SIZE - BUTTON_HEIGHT) / 2;
+
             while(strScanner.hasNextInt()){
                 Data[i] = strScanner.nextInt();
 
@@ -240,6 +245,7 @@ public class Form  extends JFrame {
         ResizeListener() {
             oldWidth = animationPicturePane.getWidth();
             oldHeight = animationPicturePane.getHeight();
+
         }
 
         public void componentResized(ComponentEvent e) {
