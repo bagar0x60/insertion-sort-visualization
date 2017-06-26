@@ -16,7 +16,7 @@ public class Form  extends JFrame {
     private static final int BUTTON_HEIGHT = 50;
     private static final int SPACE_BETWEEN_BUTTONS = 20;
 
-    private static final int FPS = 2;
+    private static final int FPS = 20;
 
 
     private Vector<NumberBlock> blockVector;
@@ -38,7 +38,7 @@ public class Form  extends JFrame {
     private JButton continueAnimationButt;
     private JButton clearAnimationButt;
     private InsertionSortAnimation animation;
-    
+
 
     public Form() {
         super("Application");
@@ -222,6 +222,8 @@ public class Form  extends JFrame {
                 i++;
             }
 
+            animation.setQueue(blockVector);
+
             animationPicturePane.revalidate();
             animationPicturePane.repaint();
 
@@ -252,9 +254,9 @@ public class Form  extends JFrame {
         }
 
         public void componentResized(ComponentEvent e) {
-            for (NumberBlock block: blockVector){
+            for (NumberBlock block : blockVector){
                 block.setLocation(  block.getX() + (-oldWidth  + animationPicturePane.getWidth())  / 2,
-                        block.getY() + (-oldHeight + animationPicturePane.getHeight()) / 2);
+                                    block.getY() + (-oldHeight + animationPicturePane.getHeight()) / 2);
             }
 
 
@@ -279,13 +281,12 @@ public class Form  extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("1");
+            //System.out.println("1");
 
-            /*
             animation.tick(1000 / FPS);
             animationPicturePane.revalidate();
             animationPicturePane.repaint();
-            */
+
         }
     }
 
@@ -298,8 +299,7 @@ public class Form  extends JFrame {
         }
     }
 
-    public class continueAnimationButtonListener implements ActionListener{
-
+    public class continueAnimationButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             timer.start();

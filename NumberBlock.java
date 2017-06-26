@@ -5,27 +5,22 @@ public class NumberBlock extends JPanel{
 
     private Color borderColor;
     private int number;
-    private int xCordinate;
-    private int yCordinate;
+    private double xCordinate;
+    private double yCordinate;
     private int sideSize;
 
     public NumberBlock(int num, int xCor, int yCor, int sideS){
-
         number = num;
         xCordinate = xCor;
         yCordinate = yCor;
         sideSize = sideS;
         JLabel numLabel = new JLabel(Integer.toString(number));
 
-        numLabel.setSize(10, 10);
-        numLabel.setAlignmentX(CENTER_ALIGNMENT);  // does this lines really need?
-        numLabel.setAlignmentY(CENTER_ALIGNMENT);  //
-
         this.setLayout(new GridBagLayout());
         this.add(numLabel);
         this.setBackground(Color.white);
-        this.setBorder(BorderFactory.createLineBorder(Color.black));
-        this.setLocation(xCordinate, yCordinate);
+        this.setBorder(BorderFactory.createLineBorder(Color.white));
+        this.setLocation((int)Math.round(xCordinate), (int)Math.round(yCordinate));
         this.setSize(sideS, sideS);
     }
 
@@ -45,21 +40,25 @@ public class NumberBlock extends JPanel{
         this.setBorder(BorderFactory.createLineBorder(Color.black));
     }
 
+    public void setBorderColorEmpty(){
+        this.setBorder(BorderFactory.createLineBorder(Color.white));
+    }
+
     public Color getColor(){
         return  borderColor;
     }
 
-    public void setPosition(int xCor, int yCor){
+    public void setPosition(double xCor, double yCor){
         xCordinate = xCor;
         yCordinate = yCor;
-        this.setLocation(xCor, yCor);
+        this.setLocation((int)Math.round(xCordinate), (int)Math.round(yCordinate));
     }
 
-    public int getXCordinate(){
+    public double getXCordinate(){
         return xCordinate;
     }
 
-    public int getYCordinate(){
+    public double getYCordinate(){
         return yCordinate;
     }
 
@@ -71,5 +70,4 @@ public class NumberBlock extends JPanel{
         sideSize = sSize;
         this.setSize(sideSize, sideSize);
     }
-
 }
