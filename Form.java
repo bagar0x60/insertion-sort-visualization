@@ -3,6 +3,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Vector;
+import javax.swing.Timer;
 
 
 public class Form  extends JFrame {
@@ -14,25 +15,35 @@ public class Form  extends JFrame {
     private JPanel animationPicturePane;
     private JPanel animationTextPane;
     private JTextField resultTextField;
-    private JLabel resultLabe;
     private JTextField inputTextField;
+    private JLabel resultLabe;
     private JLabel inputLabe;
     private JPanel emptyPanel1, emptyPanel2, emptyPanel3, emptyPanel4, emptyPanel5;
-    private int oldX = 0;
-    private int oldY = 0;
+
+    private JButton stopAnimationButt;
+    private JButton continueAnimationButt;
+    private JButton clearAnimationButt;
+    private AnimationListener animationListener;
+    //private InsertionSortAnimation iSAnimation;
 
     private static final int MAX_BLOCKS_NUMBER = 10;
     private static final int MAX_ALLOWED_ELEMENT = 100;
     private static final int MIN_ALLOWED_ELEMENT = -100;
     private static final int BLOCK_SIDE_SIZE = 70;
 
+    private static final int BUTTON_WIDTH = 70;
+    private static final int BUTTON_HEIGHT = 50;
+    private static final int SPACE_BETWEEN_BUTTONS = 20;
+
+
     public Form() {
+
         super("Application");
         setSize(800, 600);
         setMinimumSize(new Dimension(800,600));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Container cont = getContentPane();
-        cont.setLayout(new BorderLayout(5,5));
+        cont.setLayout(new BorderLayout());
         blockVector = new Vector<NumberBlock>();
 
         emptyPanel1 = new JPanel();
@@ -86,21 +97,64 @@ public class Form  extends JFrame {
         animationPicturePane = new JPanel();
         animationTextPane = new JPanel(new FlowLayout());
 
+
         cont.add(animationPane, BorderLayout.CENTER);
         animationPane.add(animationPicturePane, BorderLayout.CENTER);
         animationPane.add(animationTextPane, BorderLayout.SOUTH);
+        animationPane.setBorder(BorderFactory.createLineBorder(Color.black));
+
+
+        pack();
+        animationTextPane.setBorder(BorderFactory.createLineBorder(Color.black));
+        animationTextPane.add(new JLabel("Comments"));
+        animationTextPane.setBackground(Color.orange);
+
+        animationTextPane.setPreferredSize(new Dimension(animationPane.getWidth(), (animationPane.getHeight()/16)*3));
+        animationPicturePane.setPreferredSize(new Dimension(animationPane.getWidth(),
+                animationPane.getHeight() - animationTextPane.getHeight()));
+
+
+
+        pack();
+        stopAnimationButt = new JButton("Pause");
+        stopAnimationButt.setBackground(Color.lightGray);
+        stopAnimationButt.setBorder(BorderFactory.createLineBorder(Color.red));
+        stopAnimationButt.addActionListener(new stopAnimationButtonListener());
+        stopAnimationButt.setSize(BUTTON_WIDTH,BUTTON_HEIGHT);
+        stopAnimationButt.setLocation(animationPicturePane.getWidth()/2 - (BUTTON_WIDTH/2)*3 - SPACE_BETWEEN_BUTTONS/2,
+                                     (animationPicturePane.getHeight() - BUTTON_HEIGHT - 10));
+
+        System.out.println(animationPicturePane.getHeight());
+        System.out.println(animationTextPane.getHeight());
+        System.out.println(animationPane.getHeight());
+
+        clearAnimationButt = new JButton("Clear");
+        clearAnimationButt.setBackground(Color.lightGray);
+        clearAnimationButt.setBorder(BorderFactory.createLineBorder(Color.cyan));
+        clearAnimationButt.addActionListener(new clearAnimationButtonListener());
+        clearAnimationButt.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+        clearAnimationButt.setLocation(animationPicturePane.getWidth()/2 - BUTTON_WIDTH/2,
+                                      (animationPicturePane.getHeight() - BUTTON_HEIGHT - 10));
+
+
+        continueAnimationButt = new JButton("Play");
+        continueAnimationButt.setBackground(Color.lightGray);
+        continueAnimationButt.setBorder(BorderFactory.createLineBorder(Color.blue));
+        continueAnimationButt.addActionListener(new continueAnimationButtonListener());
+        continueAnimationButt.setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+        continueAnimationButt.setLocation(animationPicturePane.getWidth()/2 + BUTTON_WIDTH/2 + SPACE_BETWEEN_BUTTONS/2 ,
+                                         (animationPicturePane.getHeight() - BUTTON_HEIGHT - 10));
+
+
 
         animationPicturePane.setLayout(null);
         animationPicturePane.addComponentListener(new ResizeListener());
-
-        animationTextPane.setBorder(BorderFactory.createLineBorder(Color.black));
         animationPicturePane.setBorder(BorderFactory.createLineBorder(Color.black));
-        animationPane.setBorder(BorderFactory.createLineBorder(Color.black));
-
-        animationPicturePane.add(new JLabel("Animaion"));
-        animationTextPane.add(new JLabel("Comments"));
         animationPicturePane.setBackground(Color.white);
-        animationTextPane.setBackground(Color.orange);
+        animationPicturePane.add(stopAnimationButt);
+        animationPicturePane.add(continueAnimationButt);
+        animationPicturePane.add(clearAnimationButt);
+
 
     }
 
@@ -149,8 +203,11 @@ public class Form  extends JFrame {
 
 
             int i = 0;
-            int xShift = (animationPane.getWidth() - MAX_BLOCKS_NUMBER * BLOCK_SIDE_SIZE) / 2 ;
-            int yShift = (animationPane.getHeight() - BLOCK_SIDE_SIZE) / 2;
+
+            int xShift = (animationPicturePane.getWidth() - MAX_BLOCKS_NUMBER * BLOCK_SIDE_SIZE) / 2
+                                                          + BLOCK_SIDE_SIZE*(MAX_BLOCKS_NUMBER-size)/2;
+            int yShift = (animationPicturePane.getHeight() - BLOCK_SIDE_SIZE - BUTTON_HEIGHT) / 2;
+
             while(strScanner.hasNextInt()){
                 Data[i] = strScanner.nextInt();
 
@@ -169,10 +226,15 @@ public class Form  extends JFrame {
                 resultStr += Data[j] + " ";
             }
 
+
             if(!resultStr.equals("")){
                 inputTextField.setText("");
                 resultTextField.setText(resultStr);
             }
+
+
+            animationListener = new AnimationListener();
+            animationListener.timer.start();
 
         }
     }
@@ -181,21 +243,70 @@ public class Form  extends JFrame {
         private int oldHeight, oldWidth;
 
         ResizeListener() {
-            oldWidth = animationPane.getWidth();
-            oldHeight = animationPane.getHeight();
+            oldWidth = animationPicturePane.getWidth();
+            oldHeight = animationPicturePane.getHeight();
+
         }
 
         public void componentResized(ComponentEvent e) {
             for (NumberBlock block: blockVector){
-                block.setPosition(  block.getXCordinate() + (-oldWidth  + animationPane.getWidth())  / 2,
-                                    block.getYCordinate() + (-oldHeight + animationPane.getHeight()) / 2);
+                block.setLocation(  block.getX() + (-oldWidth  + animationPicturePane.getWidth())  / 2,
+                        block.getY() + (-oldHeight + animationPicturePane.getHeight()) / 2);
             }
+
+
+            stopAnimationButt.setLocation(stopAnimationButt.getX() + (-oldWidth + animationPicturePane.getWidth())/2,
+                    (animationPicturePane.getHeight() - BUTTON_HEIGHT - 10));
+
+            clearAnimationButt.setLocation(clearAnimationButt.getX() + (-oldWidth + animationPicturePane.getWidth())/2,
+                    (animationPicturePane.getHeight() - BUTTON_HEIGHT - 10));
+
+            continueAnimationButt.setLocation(continueAnimationButt.getX() + (-oldWidth + animationPicturePane.getWidth())/2,
+                    (animationPicturePane.getHeight() - BUTTON_HEIGHT - 10));
 
             animationPicturePane.revalidate();
             animationPicturePane.repaint();
 
-            oldWidth = animationPane.getWidth();
-            oldHeight = animationPane.getHeight();
+            oldWidth = animationPicturePane.getWidth();
+            oldHeight = animationPicturePane.getHeight();
+        }
+    }
+
+    public class AnimationListener implements ActionListener{
+        Timer timer = new Timer(16,this);
+
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            //InsertionSortAnimation.tick(16);
+        }
+
+    }
+
+
+    public class stopAnimationButtonListener implements ActionListener{
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            animationListener.timer.stop();
+        }
+    }
+
+    public class continueAnimationButtonListener implements ActionListener{
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            animationListener.timer.start();
+        }
+    }
+
+    public class clearAnimationButtonListener implements ActionListener{
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            for(ActionListener listener : inputTextField.getActionListeners()){
+                listener.actionPerformed(e);
+            }
         }
     }
 
