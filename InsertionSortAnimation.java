@@ -3,14 +3,14 @@ import java.util.Vector;
 
 public class InsertionSortAnimation {
 
-    private LinkedList <Command> queue;
+    private LinkedList <Command> scriptQueue;
 
     enum Colours { WHITE, BLACK, GREEN, RED }
     private static final double PAUSE_TIME = 500;
     private static final double MOVEMENT_TIME = 500;
 
     public InsertionSortAnimation (Vector<NumberBlock> arr){
-        queue = new LinkedList <Command>();
+        scriptQueue = new LinkedList <Command>();
         sort(arr);
     }
 
@@ -18,82 +18,94 @@ public class InsertionSortAnimation {
         for (int i = 0; i < arr.size(); i++) {
             NumberBlock temp = arr.get(i);
 
-            // --------------- Blinking red with the active block ---------------
-            queue.add(new Colour(Colours.RED, temp));
-            queue.add(new Pause(PAUSE_TIME));
-            queue.add(new Colour(Colours.WHITE, temp));
-            queue.add(new Pause(PAUSE_TIME));
-            queue.add(new Colour(Colours.RED, temp));
-            queue.add(new Pause(PAUSE_TIME));
-            // ------------------------------------------------------------------
+            // Blinking red with the active block
+            scriptQueue.add(new Colour(Colours.RED, temp));
+            scriptQueue.add(new Pause(PAUSE_TIME));
+            scriptQueue.add(new Colour(Colours.WHITE, temp));
+            scriptQueue.add(new Pause(PAUSE_TIME));
+            scriptQueue.add(new Colour(Colours.RED, temp));
+            scriptQueue.add(new Pause(PAUSE_TIME));
+            // ----------------------------------
 
             int j = i - 1;
 
             if (j >= 0 && arr.get(j).getNumber() > temp.getNumber()){
-                // raise up
-                queue.add(new Move(new Cor(i, 0), new Cor(i, 2), temp, MOVEMENT_TIME));
-                queue.add(new Pause(PAUSE_TIME));
-                // --------
+                // Lift red block up
+                scriptQueue.add(new Move(new Cor(i, 0), new Cor(i, 2), temp, MOVEMENT_TIME));
+                scriptQueue.add(new Pause(PAUSE_TIME));
+                // -----------------
 
                 while(j >= 0 && arr.get(j).getNumber() > temp.getNumber()) {
-                    /*
-                    // --------------- Blinking green with the active block ---------------
-                    queue.add(new Colour(Colours.GREEN, arr.get(j)));
-                    queue.add(new Pause(PAUSE_TIME));
-                    queue.add(new Colour(Colours.WHITE, arr.get(j)));
-                    queue.add(new Pause(PAUSE_TIME));
-                    queue.add(new Colour(Colours.BLACK, arr.get(j)));
-                    queue.add(new Pause(PAUSE_TIME));
-                    // ------------------------------------------------------------------
-                    */
+                    // Set compared block green
+                    scriptQueue.add(new Colour(Colours.GREEN, arr.get(j)));
+                    scriptQueue.add(new Pause(2*PAUSE_TIME));
+                    // ------------------------
 
-                    // move block left
-                    queue.add(new Move(new Cor(j, 0), new Cor(j + 1, 0), arr.get(j), MOVEMENT_TIME));
-                    queue.add(new Pause(PAUSE_TIME));
-                    // --------------
+                    // move compared block to the right
+                    scriptQueue.add(new Move(new Cor(j, 0), new Cor(j + 1, 0), arr.get(j), MOVEMENT_TIME));
+                    scriptQueue.add(new Pause(PAUSE_TIME));
+                    // -------------------------------
+
+                    // Set compared block black
+                    scriptQueue.add(new Colour(Colours.BLACK, arr.get(j)));
+                    scriptQueue.add(new Pause(PAUSE_TIME));
+                    // ------------------------
 
                     arr.set(j + 1, arr.get(j));
                     j--;
                 }
 
-                // move active block in empty space
-                queue.add(new Move(new Cor(i, 2), new Cor(j + 1, 0), temp, MOVEMENT_TIME));
-                queue.add(new Pause(PAUSE_TIME));
-                // -------------------------------
+                if (j >= 0) {
+                    // Set compared block green
+                    scriptQueue.add(new Colour(Colours.GREEN, arr.get(j)));
+                    scriptQueue.add(new Pause(2*PAUSE_TIME));
+                    // ------------------------
+
+                    // Set compared block black
+                    scriptQueue.add(new Colour(Colours.BLACK, arr.get(j)));
+                    scriptQueue.add(new Pause(PAUSE_TIME));
+                    // ------------------------
+                }
+
+                // Move red block to the empty space
+                scriptQueue.add(new Move(new Cor(i, 2), new Cor(j + 1, 0), temp, MOVEMENT_TIME));
+                scriptQueue.add(new Pause(PAUSE_TIME));
+                // ---------------------------------
 
                 arr.set(j + 1, temp);
             }
 
-            queue.add(new Colour(Colours.BLACK, temp));
-            queue.add(new Pause(PAUSE_TIME));
+            // Set active block black
+            scriptQueue.add(new Colour(Colours.BLACK, temp));
+            scriptQueue.add(new Pause(PAUSE_TIME));
+            // ----------------------
         }
     }
 
     public void setQueue (Vector<NumberBlock> arr){
-        queue.clear();
+        scriptQueue.clear();
         sort (arr);
     }
 
     public String getStatus() {
-        if(!queue.isEmpty()) {
-            return queue.getFirst().getInfo();
+        if(!scriptQueue.isEmpty()) {
+            return scriptQueue.getFirst().getInfo();
         }
         else return "";
     }
 
     public void tick(double tickTime){
-        while (!queue.isEmpty()){
-            tickTime = queue.getFirst().play(tickTime);
+        while (!scriptQueue.isEmpty()){
+            tickTime = scriptQueue.getFirst().play(tickTime);
 
             if (tickTime >= 0) {
-                queue.removeFirst();
+                scriptQueue.removeFirst();
             }
             else {
                 break;
             }
         }
     }
-
 
     private class Move implements Command {
         private double movementTime;
