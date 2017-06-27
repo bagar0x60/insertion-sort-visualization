@@ -1,3 +1,4 @@
+import java.awt.font.FontRenderContext;
 import java.util.Scanner;
 import javax.swing.*;
 import java.awt.*;
@@ -27,9 +28,10 @@ public class Form  extends JFrame {
     private JPanel resultPane;
     private JPanel animationPane;
     private JPanel animationPicturePane;
-    private JPanel animationTextPane;
     private JTextField resultTextField;
     private JTextField inputTextField;
+    private JTextArea animationTextArea;
+    private JScrollPane animationTextScrollPane;
     private JLabel resultLabe;
     private JLabel inputLabe;
     private JPanel emptyPanel1, emptyPanel2, emptyPanel3, emptyPanel4, emptyPanel5;
@@ -98,27 +100,27 @@ public class Form  extends JFrame {
 
         animationPane = new JPanel(new BorderLayout());
         animationPicturePane = new JPanel();
-        animationTextPane = new JPanel(new FlowLayout());
+        animationTextArea = new JTextArea("\n\n\t\t\t\t  Comments");
+        animationTextScrollPane = new JScrollPane(animationTextArea);
 
 
         cont.add(animationPane, BorderLayout.CENTER);
         animationPane.add(animationPicturePane, BorderLayout.CENTER);
-        animationPane.add(animationTextPane, BorderLayout.SOUTH);
+        animationPane.add(animationTextScrollPane, BorderLayout.SOUTH);
         animationPane.setBorder(BorderFactory.createLineBorder(Color.black));
 
 
-        pack();
-        animationTextPane.setBorder(BorderFactory.createLineBorder(Color.black));
-        animationTextPane.add(new JLabel("Comments"));
-        animationTextPane.setBackground(Color.orange);
-
-        animationTextPane.setPreferredSize(new Dimension(animationPane.getWidth(), (animationPane.getHeight()/16)*3));
-        animationPicturePane.setPreferredSize(new Dimension(animationPane.getWidth(),
-                animationPane.getHeight() - animationTextPane.getHeight()));
 
 
 
         pack();
+        animationTextArea.setBackground(Color.orange);
+        animationTextArea.setLayout(null);
+        animationTextArea.setEditable(false);
+
+        animationTextScrollPane.setPreferredSize(new Dimension(animationPane.getWidth(), (animationPane.getHeight()/16)*3));
+
+
         stopAnimationButt = new JButton("Pause");
         stopAnimationButt.setBackground(Color.lightGray);
         stopAnimationButt.setBorder(BorderFactory.createLineBorder(Color.red));
@@ -127,9 +129,6 @@ public class Form  extends JFrame {
         stopAnimationButt.setLocation(animationPicturePane.getWidth()/2 - (BUTTON_WIDTH/2)*3 - SPACE_BETWEEN_BUTTONS/2,
                 (animationPicturePane.getHeight() - BUTTON_HEIGHT - 10));
 
-        System.out.println(animationPicturePane.getHeight());
-        System.out.println(animationTextPane.getHeight());
-        System.out.println(animationPane.getHeight());
 
         clearAnimationButt = new JButton("Clear");
         clearAnimationButt.setBackground(Color.lightGray);
@@ -212,7 +211,9 @@ public class Form  extends JFrame {
 
             int xShift = (animationPicturePane.getWidth() - MAX_BLOCKS_NUMBER * BLOCK_SIDE_SIZE) / 2
                     + BLOCK_SIDE_SIZE*(MAX_BLOCKS_NUMBER-size)/2;
-            int yShift = (animationPicturePane.getHeight() - BLOCK_SIDE_SIZE - BUTTON_HEIGHT) / 2;
+          
+            int yShift = (animationPicturePane.getHeight() - BLOCK_SIDE_SIZE - BUTTON_HEIGHT/2) / 2;
+
 
             while(strScanner.hasNextInt()){
                 Data[i] = strScanner.nextInt();
@@ -239,6 +240,8 @@ public class Form  extends JFrame {
                 inputTextField.setText("");
                 resultTextField.setText(resultStr);
             }
+
+            animationTextArea.setText("");
 
             timer.start();
         }
@@ -281,12 +284,10 @@ public class Form  extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            //System.out.println("1");
-
             animation.tick(1000 / FPS);
+            animationTextArea.append(animation.getLastMsg());
             animationPicturePane.revalidate();
             animationPicturePane.repaint();
-
         }
     }
 

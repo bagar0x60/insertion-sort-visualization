@@ -3,6 +3,7 @@ import java.util.Vector;
 
 public class InsertionSortAnimation {
 
+
     private LinkedList <Command> scriptQueue;
 
     enum Colours { WHITE, BLACK, GREEN, RED }
@@ -15,6 +16,7 @@ public class InsertionSortAnimation {
     }
 
     public void sort(Vector<NumberBlock> arr){
+
         for (int i = 0; i < arr.size(); i++) {
             NumberBlock temp = arr.get(i);
 
@@ -107,6 +109,7 @@ public class InsertionSortAnimation {
         }
     }
 
+
     private class Move implements Command {
         private double movementTime;
         private double passedTime;
@@ -146,6 +149,7 @@ public class InsertionSortAnimation {
         }
 
         public String getInfo() {
+
             if (startPoint.yCor - endPoint.yCor < 0) {
                 return "Sort the block from position " + startPoint.xCor;
             }
@@ -155,6 +159,7 @@ public class InsertionSortAnimation {
             else {
                 return "Moves the block from position " + startPoint.xCor + " to endPoint.xCor";
             }
+
         }
     }
 
@@ -217,6 +222,7 @@ public class InsertionSortAnimation {
         }
 
         public String getInfo() {
+
             if (colour == Colours.GREEN) {
                 return "Comparison with the block in position " + (int)(element.getXCordinate() / element.getSideSize());
             }
@@ -224,3 +230,4 @@ public class InsertionSortAnimation {
         }
     }
 }
+
