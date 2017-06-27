@@ -5,27 +5,18 @@ public class NumberBlock extends JPanel{
 
     private Color borderColor;
     private int number;
-    private int xCordinate;
-    private int yCordinate;
     private int sideSize;
 
     public NumberBlock(int num, int xCor, int yCor, int sideS){
-
         number = num;
-        xCordinate = xCor;
-        yCordinate = yCor;
         sideSize = sideS;
         JLabel numLabel = new JLabel(Integer.toString(number));
-
-        numLabel.setSize(10, 10);
-        numLabel.setAlignmentX(CENTER_ALIGNMENT);  // does this lines really need?
-        numLabel.setAlignmentY(CENTER_ALIGNMENT);  //
 
         this.setLayout(new GridBagLayout());
         this.add(numLabel);
         this.setBackground(Color.white);
-        this.setBorder(BorderFactory.createLineBorder(Color.black));
-        this.setLocation(xCordinate, yCordinate);
+        this.setBorder(BorderFactory.createLineBorder(Color.white));
+        this.setLocation((int)Math.round(xCor), (int)Math.round(yCor));
         this.setSize(sideS, sideS);
     }
 
@@ -45,22 +36,16 @@ public class NumberBlock extends JPanel{
         this.setBorder(BorderFactory.createLineBorder(Color.black));
     }
 
+    public void setBorderColorEmpty(){
+        this.setBorder(BorderFactory.createLineBorder(Color.white));
+    }
+
     public Color getColor(){
         return  borderColor;
     }
 
-    public void setPosition(int xCor, int yCor){
-        xCordinate = xCor;
-        yCordinate = yCor;
-        this.setLocation(xCor, yCor);
-    }
-
-    public int getXCordinate(){
-        return xCordinate;
-    }
-
-    public int getYCordinate(){
-        return yCordinate;
+    public void setPosition(double xCor, double yCor){
+        this.setLocation((int)Math.round(xCor), (int)Math.round(yCor));
     }
 
     public int getSideSize(){
