@@ -16,7 +16,9 @@ public class NumberBlock extends JPanel{
         this.add(numLabel);
         this.setBackground(Color.white);
         this.setBorder(BorderFactory.createLineBorder(Color.white));
+
         this.setLocation((int)Math.round(xCor), (int)Math.round(yCor));
+
         this.setSize(sideS, sideS);
     }
 
@@ -38,6 +40,7 @@ public class NumberBlock extends JPanel{
 
     public void setBorderColorEmpty(){
         this.setBorder(BorderFactory.createLineBorder(Color.white));
+
     }
 
     public Color getColor(){
@@ -46,6 +49,7 @@ public class NumberBlock extends JPanel{
 
     public void setPosition(double xCor, double yCor){
         this.setLocation((int)Math.round(xCor), (int)Math.round(yCor));
+
     }
 
     public int getSideSize(){
@@ -56,5 +60,4 @@ public class NumberBlock extends JPanel{
         sideSize = sSize;
         this.setSize(sideSize, sideSize);
     }
-
 }

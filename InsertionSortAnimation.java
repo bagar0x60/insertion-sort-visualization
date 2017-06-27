@@ -3,115 +3,105 @@ import java.util.Vector;
 
 public class InsertionSortAnimation {
 
-    private LinkedList <Command> queue;
+
+    private LinkedList <Command> scriptQueue;
+
     enum Colours { WHITE, BLACK, GREEN, RED }
-    enum CompletedActions{ MAIN_CHOOSE, MOVE_RIGHT, COMPARE_ELEMENTS, ELEMENT_SORTED, END_SORT}
     private static final double PAUSE_TIME = 500;
     private static final double MOVEMENT_TIME = 500;
-    private String lastMsg;
 
     public InsertionSortAnimation (Vector<NumberBlock> arr){
-        queue = new LinkedList <Command>();
+        scriptQueue = new LinkedList <Command>();
         sort(arr);
     }
 
     public void sort(Vector<NumberBlock> arr){
 
-        String arrStr = new String();
-        for(int i = 0; i < arr.size(); i++){
-            arrStr += arr.get(i).getNumber() + " ";
-        }
-
         for (int i = 0; i < arr.size(); i++) {
             NumberBlock temp = arr.get(i);
 
-            // --------------- Blinking red with the active block ---------------
-            queue.add(new ActionComplited(CompletedActions.MAIN_CHOOSE, temp));
-            queue.add(new Colour(Colours.RED, temp));
-            queue.add(new Pause(PAUSE_TIME));
-            queue.add(new Colour(Colours.WHITE, temp));
-            queue.add(new Pause(PAUSE_TIME));
-            queue.add(new Colour(Colours.RED, temp));
-            queue.add(new Pause(PAUSE_TIME));
-            // ------------------------------------------------------------------
+            // Blinking red with the active block
+            scriptQueue.add(new Colour(Colours.RED, temp));
+            scriptQueue.add(new Pause(PAUSE_TIME));
+            scriptQueue.add(new Colour(Colours.WHITE, temp));
+            scriptQueue.add(new Pause(PAUSE_TIME));
+            scriptQueue.add(new Colour(Colours.RED, temp));
+            scriptQueue.add(new Pause(PAUSE_TIME));
+            // ----------------------------------
 
             int j = i - 1;
 
-            if (j >= 0){
-                if(arr.get(j).getNumber() > temp.getNumber()){
-                    boolean compareMsgPrinted = false;
-                    // raise up
-                    queue.add(new ActionComplited(CompletedActions.COMPARE_ELEMENTS, temp, arr.get(j)));
-                    queue.add(new Colour(Colours.GREEN, arr.get(j)));
-                    queue.add(new Pause(PAUSE_TIME));
-                    queue.add(new Move(new Cor(i, 0), new Cor(i, 2), temp, MOVEMENT_TIME));
-                    queue.add(new Pause(PAUSE_TIME/2));
-                    compareMsgPrinted = true;
-                    // --------
+            if (j >= 0 && arr.get(j).getNumber() > temp.getNumber()){
+                // Lift red block up
+                scriptQueue.add(new Move(new Cor(i, 0), new Cor(i, 2), temp, MOVEMENT_TIME));
+                scriptQueue.add(new Pause(PAUSE_TIME));
+                // -----------------
 
-                    while(j >= 0 && arr.get(j).getNumber() > temp.getNumber()) {
+                while(j >= 0 && arr.get(j).getNumber() > temp.getNumber()) {
+                    // Set compared block green
+                    scriptQueue.add(new Colour(Colours.GREEN, arr.get(j)));
+                    scriptQueue.add(new Pause(2*PAUSE_TIME));
+                    // ------------------------
 
-                        // --------------- Blinking green with the active block ---------------
-
-                        if(!compareMsgPrinted)queue.add(new ActionComplited(CompletedActions.COMPARE_ELEMENTS, temp, arr.get(j)));
-                        compareMsgPrinted = false;
-                        queue.add(new Colour(Colours.GREEN, arr.get(j)));
-                        queue.add(new Pause(PAUSE_TIME));
-                        // ------------------------------------------------------------------
-
-
-                        // move block left
-                        queue.add(new ActionComplited(CompletedActions.MOVE_RIGHT, arr.get(j)));
-                        queue.add(new Move(new Cor(j, 0), new Cor(j + 1, 0), arr.get(j), MOVEMENT_TIME));
-                        queue.add(new Colour(Colours.BLACK, arr.get(j)));
-                        queue.add(new Pause(PAUSE_TIME));
-                        // --------------
-
-                        arr.set(j + 1, arr.get(j));
-                        j--;
-                    }
-
-                    // move active block in empty space
-                    queue.add(new Move(new Cor(i, 2), new Cor(j + 1, 0), temp, MOVEMENT_TIME));
-                    queue.add(new Pause(PAUSE_TIME/2));
+                    // move compared block to the right
+                    scriptQueue.add(new Move(new Cor(j, 0), new Cor(j + 1, 0), arr.get(j), MOVEMENT_TIME));
+                    scriptQueue.add(new Pause(PAUSE_TIME));
                     // -------------------------------
 
-                    arr.set(j + 1, temp);
+                    // Set compared block black
+                    scriptQueue.add(new Colour(Colours.BLACK, arr.get(j)));
+                    scriptQueue.add(new Pause(PAUSE_TIME));
+                    // ------------------------
+
+                    arr.set(j + 1, arr.get(j));
+                    j--;
                 }
-                else{
-                    queue.add(new ActionComplited(CompletedActions.COMPARE_ELEMENTS, temp, arr.get(j)));
-                    queue.add(new Colour(Colours.GREEN, arr.get(j)));
-                    queue.add(new Pause(PAUSE_TIME*2));
-                    queue.add(new Colour(Colours.BLACK, arr.get(j)));
+
+                if (j >= 0) {
+                    // Set compared block green
+                    scriptQueue.add(new Colour(Colours.GREEN, arr.get(j)));
+                    scriptQueue.add(new Pause(2*PAUSE_TIME));
+                    // ------------------------
+
+                    // Set compared block black
+                    scriptQueue.add(new Colour(Colours.BLACK, arr.get(j)));
+                    scriptQueue.add(new Pause(PAUSE_TIME));
+                    // ------------------------
                 }
+
+                // Move red block to the empty space
+                scriptQueue.add(new Move(new Cor(i, 2), new Cor(j + 1, 0), temp, MOVEMENT_TIME));
+                scriptQueue.add(new Pause(PAUSE_TIME));
+                // ---------------------------------
+
+                arr.set(j + 1, temp);
             }
 
-            queue.add(new ActionComplited(CompletedActions.ELEMENT_SORTED, temp));
-            queue.add(new Colour(Colours.BLACK, temp));
-            queue.add(new Pause(PAUSE_TIME));
+            // Set active block black
+            scriptQueue.add(new Colour(Colours.BLACK, temp));
+            scriptQueue.add(new Pause(PAUSE_TIME));
+            // ----------------------
         }
-        queue.add(new ActionComplited(CompletedActions.END_SORT, arrStr));
     }
 
     public void setQueue (Vector<NumberBlock> arr){
-        queue.clear();
+        scriptQueue.clear();
         sort (arr);
     }
 
-
-    public String getLastMsg(){
-        return lastMsg;
+    public String getStatus() {
+        if(!scriptQueue.isEmpty()) {
+            return scriptQueue.getFirst().getInfo();
+        }
+        else return "";
     }
 
     public void tick(double tickTime){
-        lastMsg = "";
-        while (!queue.isEmpty()){
-            tickTime = queue.getFirst().play(tickTime);
+        while (!scriptQueue.isEmpty()){
+            tickTime = scriptQueue.getFirst().play(tickTime);
 
             if (tickTime >= 0) {
-                String tempStr = queue.getFirst().getInfo();
-                if(!tempStr.equals("")) lastMsg = tempStr;
-                queue.removeFirst();
+                scriptQueue.removeFirst();
             }
             else {
                 break;
@@ -119,58 +109,6 @@ public class InsertionSortAnimation {
         }
     }
 
-
-    private class ActionComplited implements Command{
-
-        private CompletedActions compActs;
-        private String message;
-        private NumberBlock numBlockMain;
-        private NumberBlock numBlockCompared;
-
-        ActionComplited(CompletedActions Act, NumberBlock block){
-            compActs = Act;
-            numBlockMain = block;
-        }
-
-        ActionComplited(CompletedActions Act, NumberBlock mainBlock, NumberBlock comparedBlock){
-            compActs = Act;
-            numBlockMain = mainBlock;
-            numBlockCompared = comparedBlock;
-        }
-
-        ActionComplited(CompletedActions Act, String vecToSort){
-            compActs = Act;
-            message = "\n numbers: \"" + vecToSort;
-        }
-
-        @Override
-        public double play(double tickTime) {
-            switch (compActs) {
-                case MAIN_CHOOSE:
-                    message = "\n" + "Element (" + numBlockMain.getNumber() + ") choosed.";
-                    break;
-                case MOVE_RIGHT:
-                    message = "\n" + "Element (" + numBlockMain.getNumber() + ") moves right.";
-                    break;
-                case COMPARE_ELEMENTS:
-                    message = "\n" + "Element (" + numBlockMain.getNumber() + ") compares with (" + numBlockCompared.getNumber() + ")";
-                    break;
-                case ELEMENT_SORTED:
-                    message = "\n" + "Element (" + numBlockMain.getNumber() + ") sorted.\n";
-                    break;
-                case END_SORT:
-                    message += "\" sorted successefully .\n";
-                    break;
-                default:
-            }
-            return tickTime;
-        }
-
-        @Override
-        public String getInfo() {
-            return message;
-        }
-    }
 
     private class Move implements Command {
         private double movementTime;
@@ -211,7 +149,17 @@ public class InsertionSortAnimation {
         }
 
         public String getInfo() {
-            return "";
+
+            if (startPoint.yCor - endPoint.yCor < 0) {
+                return "Sort the block from position " + startPoint.xCor;
+            }
+            else if (startPoint.yCor - endPoint.yCor > 0) {
+                return "Moves the sorted block to position " + endPoint.xCor;
+            }
+            else {
+                return "Moves the block from position " + startPoint.xCor + " to endPoint.xCor";
+            }
+
         }
     }
 
@@ -274,7 +222,12 @@ public class InsertionSortAnimation {
         }
 
         public String getInfo() {
-            return "";
+
+            if (colour == Colours.GREEN) {
+                return "Comparison with the block in position " + (int)(element.getXCordinate() / element.getSideSize());
+            }
+            else return "";
         }
     }
 }
+

@@ -211,7 +211,9 @@ public class Form  extends JFrame {
 
             int xShift = (animationPicturePane.getWidth() - MAX_BLOCKS_NUMBER * BLOCK_SIDE_SIZE) / 2
                     + BLOCK_SIDE_SIZE*(MAX_BLOCKS_NUMBER-size)/2;
+          
             int yShift = (animationPicturePane.getHeight() - BLOCK_SIDE_SIZE - BUTTON_HEIGHT/2) / 2;
+
 
             while(strScanner.hasNextInt()){
                 Data[i] = strScanner.nextInt();
@@ -240,6 +242,7 @@ public class Form  extends JFrame {
             }
 
             animationTextArea.setText("");
+
             timer.start();
         }
     }
@@ -256,7 +259,7 @@ public class Form  extends JFrame {
         public void componentResized(ComponentEvent e) {
             for (NumberBlock block : blockVector){
                 block.setLocation(  block.getX() + (-oldWidth  + animationPicturePane.getWidth())  / 2,
-                        block.getY() + (-oldHeight + animationPicturePane.getHeight()) / 2);
+                                    block.getY() + (-oldHeight + animationPicturePane.getHeight()) / 2);
             }
 
 
@@ -281,7 +284,6 @@ public class Form  extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-
             animation.tick(1000 / FPS);
             animationTextArea.append(animation.getLastMsg());
             animationPicturePane.revalidate();
