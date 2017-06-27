@@ -2,24 +2,26 @@ import java.awt.*;
 import javax.swing.*;
 
 public class NumberBlock extends JPanel{
+    private static final int BORDER_WIDTH = 5;
+    private static final float FONT_SIZE = 32.0f;
 
     private Color borderColor;
     private int number;
     private int sideSize;
 
-    public NumberBlock(int num, int xCor, int yCor, int sideS){
+    public NumberBlock(int num, double x, double y, int sideS){
         number = num;
         sideSize = sideS;
         JLabel numLabel = new JLabel(Integer.toString(number));
+        numLabel.setFont(numLabel.getFont().deriveFont(FONT_SIZE));
 
-        this.setLayout(new GridBagLayout());
-        this.add(numLabel);
-        this.setBackground(Color.white);
-        this.setBorder(BorderFactory.createLineBorder(Color.white));
+        setLayout(new GridBagLayout());
+        add(numLabel);
+        setBackground(Color.white);
+        setLocation((int)Math.round(x), (int)Math.round(y));
 
-        this.setLocation((int)Math.round(xCor), (int)Math.round(yCor));
-
-        this.setSize(sideS, sideS);
+        setSideSize(sideS);
+        setBorderColorEmpty();
     }
 
     public int getNumber(){
@@ -27,29 +29,27 @@ public class NumberBlock extends JPanel{
     }
 
     public void setBorderColorRed(){
-        this.setBorder(BorderFactory.createLineBorder(Color.red));
+        borderColor = Color.red;
+        this.setBorder(BorderFactory.createLineBorder(borderColor, BORDER_WIDTH));
     }
 
     public void setBorderColorGreen(){
-        this.setBorder(BorderFactory.createLineBorder(Color.green));
+        borderColor = Color.green;
+        this.setBorder(BorderFactory.createLineBorder(borderColor, BORDER_WIDTH));;
     }
 
     public void setBorderColorGBlack(){
-        this.setBorder(BorderFactory.createLineBorder(Color.black));
+        borderColor = Color.BLACK;
+        this.setBorder(BorderFactory.createLineBorder(borderColor, BORDER_WIDTH));
     }
 
     public void setBorderColorEmpty(){
-        this.setBorder(BorderFactory.createLineBorder(Color.white));
-
+        borderColor = Color.WHITE;
+        this.setBorder(BorderFactory.createLineBorder(borderColor, BORDER_WIDTH));
     }
 
     public Color getColor(){
         return  borderColor;
-    }
-
-    public void setPosition(double xCor, double yCor){
-        this.setLocation((int)Math.round(xCor), (int)Math.round(yCor));
-
     }
 
     public int getSideSize(){
@@ -60,4 +60,5 @@ public class NumberBlock extends JPanel{
         sideSize = sSize;
         this.setSize(sideSize, sideSize);
     }
+
 }
