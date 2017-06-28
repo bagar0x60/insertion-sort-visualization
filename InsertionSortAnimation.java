@@ -41,6 +41,21 @@ public class InsertionSortAnimation {
 
             int j = i - 1;
 
+            if (j >= 0 && arr.get(j).getNumber() <= temp.getNumber()) {
+                // Set compared block green
+                scriptQueue.add(new ActionCompleted(CompletedActions.COMPARE_ELEMENTS, temp, arr.get(j)));
+
+                scriptQueue.add(new Colour(Colours.GREEN, arr.get(j)));
+                scriptQueue.add(new Pause(2*PAUSE_TIME));
+                // ------------------------
+
+                // Set compared block black
+                scriptQueue.add(new Colour(Colours.BLACK, arr.get(j)));
+                scriptQueue.add(new Pause(PAUSE_TIME));
+                // ------------------------
+
+            }
+
 
             if (j >= 0 && arr.get(j).getNumber() > temp.getNumber()) {
                 // Lift red block up
@@ -161,7 +176,6 @@ public class InsertionSortAnimation {
             message = "\n numbers: \"" + vecToSort;
         }
 
-        @Override
         public double play(double tickTime) {
             switch (compActs) {
                 case MAIN_CHOOSE:
@@ -184,7 +198,6 @@ public class InsertionSortAnimation {
             return tickTime;
         }
 
-        @Override
         public String getInfo() {
             return message;
         }
